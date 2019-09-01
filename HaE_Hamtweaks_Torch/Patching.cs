@@ -25,7 +25,7 @@ using Sandbox.Game;
 using Sandbox.Engine.Utils;
 using Sandbox.Game.Multiplayer;
 using NLog;
-
+using Sandbox.Game.EntityComponents;
 
 namespace HaE_Hamtweaks_Torch
 {
@@ -50,6 +50,14 @@ namespace HaE_Hamtweaks_Torch
 
             //UpdateSounds MyGasGenerator
             ctx.GetPattern(typeof(MyGasGenerator).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+
+            //UpdateSounds MyShipSoundComponent
+            ctx.GetPattern(typeof(MyShipSoundComponent).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+
+            //UpdateSounds MyProjectorBase
+            ctx.GetPattern(typeof(MyProjectorBase).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
                 .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             Log.Info("Finished Patching!");
