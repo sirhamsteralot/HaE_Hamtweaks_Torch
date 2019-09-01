@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -33,16 +34,54 @@ namespace HaE_Hamtweaks_Torch
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        [ReflectedMethodInfo(typeof(MyCubeGrid), "ColorGridOrBlockRequestValidation")]
-        private static readonly MethodInfo _ColorGridOrBlockRequest;
-
         public static void Patch(PatchContext ctx)
         {
-            ctx.GetPattern(_ColorGridOrBlockRequest).Prefixes.Add(typeof(Patching).GetMethod("PrefixColorGridOrBlockRequestValidation", BindingFlags.Public | BindingFlags.Static));
+            // PAINTING PATCH (allows faction mates to paint too)
+            ctx.GetPattern(typeof(MyCubeGrid).GetMethod("ColorGridOrBlockRequestValidation", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixColorGridOrBlockRequestValidation", BindingFlags.Public | BindingFlags.Static));
+
+            // LCD PATCH
+            //ctx.GetPattern(typeof(MyTextPanel).GetConstructor(Type.EmptyTypes)).Suffixes
+            //    .Add(typeof(Patching).GetMethod("SuffixLCDInitialized", BindingFlags.Public | BindingFlags.Static));
+
+            //UpdateMassFromInventoriesPatch
+            ctx.GetPattern(typeof(MyGridShape).GetMethod("UpdateMassFromInventories", BindingFlags.Public | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixUpdateMassFromInventories", BindingFlags.Public | BindingFlags.Static));
+
+            //UpdateSounds MyGasGenerator
+            ctx.GetPattern(typeof(MyGasGenerator).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             Log.Info("Finished Patching!");
         }
 
+        private static Dictionary<MyGridShape, TimeSpan> lastUpdateTimestamp = new Dictionary<MyGridShape, TimeSpan>();
+        public static bool PrefixUpdateMassFromInventories(List<MyCubeBlock> blocks, MyPhysicsBody rb, MyGridShape __instance)
+        {
+            TimeSpan time;
+            if (!lastUpdateTimestamp.TryGetValue(__instance, out time))
+            {
+                lastUpdateTimestamp[__instance] = MySession.Static.ElapsedGameTime;
+                return true;
+            }
+
+            if ((MySession.Static.ElapsedGameTime - time).TotalMilliseconds < 1000)
+                return false;
+
+            lastUpdateTimestamp[__instance] = MySession.Static.ElapsedGameTime;
+
+            return true;
+        }
+
+        public static bool PrefixJustNo()
+        {
+            return false;
+        }
+
+        public static void SuffixLCDInitialized(MyTextPanel __instance)
+        {
+            typeof(MyTextPanel).GetField("m_publicTitle", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(__instance, new StringBuilder(32000));
+        }
 
         public static bool PrefixColorGridOrBlockRequestValidation(long player, MyCubeGrid __instance, ref bool __result)
         {
