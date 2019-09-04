@@ -60,7 +60,23 @@ namespace HaE_Hamtweaks_Torch
             ctx.GetPattern(typeof(MyProjectorBase).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
                 .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
+            //UpdateSoundEmitters MyFunctionalBlock
+            ctx.GetPattern(typeof(MyFunctionalBlock).GetMethod("UpdateSoundEmitters", BindingFlags.Public | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+
+            //ThrustParticles MyThrust
+            ctx.GetPattern(typeof(MyThrust).GetMethod("ThrustParticles", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+
+            //Emissives MyGasGenerator
+            ctx.GetPattern(typeof(MyGasGenerator).GetMethod("SetEmissiveStateWorking", BindingFlags.Public | BindingFlags.Instance)).Prefixes
+                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+
             Log.Info("Finished Patching!");
+        }
+        public static bool PrefixJustNo()
+        {
+            return false;
         }
 
         private static Dictionary<MyGridShape, TimeSpan> lastUpdateTimestamp = new Dictionary<MyGridShape, TimeSpan>();
@@ -79,11 +95,6 @@ namespace HaE_Hamtweaks_Torch
             lastUpdateTimestamp[__instance] = MySession.Static.ElapsedGameTime;
 
             return true;
-        }
-
-        public static bool PrefixJustNo()
-        {
-            return false;
         }
 
         public static void SuffixLCDInitialized(MyTextPanel __instance)
