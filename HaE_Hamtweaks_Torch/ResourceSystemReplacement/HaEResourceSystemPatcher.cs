@@ -31,7 +31,7 @@ using Torch.Managers.PatchManager;
 namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
     [ReflectedLazy]
-    public static class ResourceSystemPatcher
+    public static class HaEResourceSystemPatcher
     {
         public static void Patch(PatchContext ctx)
         {

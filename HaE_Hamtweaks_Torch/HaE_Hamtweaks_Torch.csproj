@@ -150,11 +150,11 @@
     <Compile Include="ResourceSystemReplacement\HaEResourceDistributerComponent.cs" />
     <Compile Include="HaeHamTweaks.cs" />
     <Compile Include="HaEPatchTweaksManager.cs" />
-    <Compile Include="Patching.cs" />
+    <Compile Include="HaEPatching.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtils.cs" />
     <Compile Include="ResourceSystemReplacement\HaEResourceSystemInterface.cs" />
-    <Compile Include="ResourceSystemReplacement\ResourceSystemPatcher.cs" />
+    <Compile Include="ResourceSystemReplacement\HaEResourceSystemPatcher.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

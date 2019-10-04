@@ -30,7 +30,7 @@ using Sandbox.Game.EntityComponents;
 namespace HaE_Hamtweaks_Torch
 {
     [ReflectedLazy]
-    internal static class Patching
+    internal static class HaEPatching
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -38,7 +38,7 @@ namespace HaE_Hamtweaks_Torch
         {
             // PAINTING PATCH (allows faction mates to paint too)
             ctx.GetPattern(typeof(MyCubeGrid).GetMethod("ColorGridOrBlockRequestValidation", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixColorGridOrBlockRequestValidation", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixColorGridOrBlockRequestValidation", BindingFlags.Public | BindingFlags.Static));
 
             // LCD PATCH
             //ctx.GetPattern(typeof(MyTextPanel).GetConstructor(Type.EmptyTypes)).Suffixes
@@ -46,31 +46,31 @@ namespace HaE_Hamtweaks_Torch
 
             //UpdateMassFromInventoriesPatch
             ctx.GetPattern(typeof(MyGridShape).GetMethod("UpdateMassFromInventories", BindingFlags.Public | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixUpdateMassFromInventories", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixUpdateMassFromInventories", BindingFlags.Public | BindingFlags.Static));
 
             //UpdateSounds MyGasGenerator
             ctx.GetPattern(typeof(MyGasGenerator).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             //UpdateSounds MyShipSoundComponent
             ctx.GetPattern(typeof(MyShipSoundComponent).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             //UpdateSounds MyProjectorBase
             ctx.GetPattern(typeof(MyProjectorBase).GetMethod("UpdateSounds", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             //UpdateSoundEmitters MyFunctionalBlock
             ctx.GetPattern(typeof(MyFunctionalBlock).GetMethod("UpdateSoundEmitters", BindingFlags.Public | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             //ThrustParticles MyThrust
             ctx.GetPattern(typeof(MyThrust).GetMethod("ThrustParticles", BindingFlags.NonPublic | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             //Emissives MyGasGenerator
             ctx.GetPattern(typeof(MyGasGenerator).GetMethod("SetEmissiveStateWorking", BindingFlags.Public | BindingFlags.Instance)).Prefixes
-                .Add(typeof(Patching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
+                .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
             Log.Info("Finished Patching!");
         }
