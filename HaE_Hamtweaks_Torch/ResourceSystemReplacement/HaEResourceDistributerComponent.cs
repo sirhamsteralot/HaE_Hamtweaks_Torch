@@ -28,14 +28,14 @@ using Sandbox.Game.EntityComponents;
 
 namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
-    public class HaEResourceDistributerComponent : MyResourceDistributorComponent
+    public class HaEResourceDistributorComponent : MyResourceDistributorComponent
     {
-        public HaEResourceDistributerComponent(string debugName) : base(debugName)
+        public HaEResourceDistributorComponent(string debugName) : base(debugName)
         {
 
         }
 
-        public HaEResourceDistributerComponent(MyResourceDistributorComponent originalComponent) : base(originalComponent.DebugName)
+        public HaEResourceDistributorComponent(MyResourceDistributorComponent originalComponent) : base(originalComponent.DebugName)
         {
 
         }
