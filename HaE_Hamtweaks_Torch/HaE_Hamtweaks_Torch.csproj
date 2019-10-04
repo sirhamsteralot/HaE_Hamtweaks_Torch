@@ -147,7 +147,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GridSystemReplacements\HaEResourceDistributerComponent.cs" />
+    <Compile Include="ResourceSystemReplacement\HaEResourceDistributerComponent.cs" />
     <Compile Include="HaeHamTweaks.cs" />
     <Compile Include="HaEPatchTweaksManager.cs" />
     <Compile Include="Patching.cs" />

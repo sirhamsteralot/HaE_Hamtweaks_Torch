@@ -7,6 +7,7 @@ using Sandbox.Game.GameSystems.Conveyors;
 using Sandbox.Game.Gui;
 using Sandbox.Game.World;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,7 +26,7 @@ using VRageMath;
 using VRageRender;
 using Sandbox.Game.EntityComponents;
 
-namespace HaE_Hamtweaks_Torch.GridSystemReplacements
+namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
     public class HaEResourceDistributerComponent : MyResourceDistributorComponent
     {
@@ -34,6 +35,9 @@ namespace HaE_Hamtweaks_Torch.GridSystemReplacements
 
         }
 
+        public new void UpdateBeforeSimulation()
+        {
 
+        }
     }
 }
