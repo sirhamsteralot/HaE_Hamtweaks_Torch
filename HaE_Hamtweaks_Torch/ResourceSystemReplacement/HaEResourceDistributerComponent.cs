@@ -35,6 +35,11 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 
         }
 
+        public HaEResourceDistributerComponent(MyResourceDistributorComponent originalComponent) : base(originalComponent.DebugName)
+        {
+
+        }
+
         public new void UpdateBeforeSimulation()
         {
 
