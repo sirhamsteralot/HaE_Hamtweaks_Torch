@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using VRage.Game.Entity;
 using VRage.ModAPI;
+using VRage.Game;
 
 namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
@@ -16,6 +18,28 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
         private static Dictionary<long, HaEResourceDistributorComponent> _entityToDistributer = new Dictionary<long, HaEResourceDistributorComponent>();
         private const bool patchDisabled = false;
 
+        public static bool UpdateBeforeSimulation(MyResourceDistributorComponent __instance)
+        {
+            var entityComponent = GetEntityComponent(__instance);
+            if (entityComponent == null)
+                return true;
+
+            entityComponent.UpdateBeforeSimulation();
+            return false;
+        }
+
+        public static bool RecomputeResourceDistribution(ref MyDefinitionId typeId, bool updateChanges = true, MyResourceDistributorComponent __instance)
+        {
+            var entityComponent = GetEntityComponent(__instance);
+            if (entityComponent == null)
+                return true;
+
+
+
+            return false;
+        }
+
+        #region helpers
         // Will return either the correct entity component, create one if it isnt there or return null if there is no entity
         private static HaEResourceDistributorComponent GetEntityComponent(MyResourceDistributorComponent instance)
         {
@@ -43,15 +67,6 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
         {
             typeof(MyCubeGridSystems).GetProperty("ResourceDistributor", BindingFlags.Public | BindingFlags.NonPublic)?.SetValue(entity, newComponent);
         }
-
-        public static bool UpdateBeforeSimulation(MyResourceDistributorComponent __instance)
-        {
-            var entityComponent = GetEntityComponent(__instance);
-            if (entityComponent == null)
-                return true;
-
-            entityComponent.UpdateBeforeSimulation();
-            return false;
-        }
+        #endregion
     }
 }

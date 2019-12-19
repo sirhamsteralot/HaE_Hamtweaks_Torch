@@ -147,6 +147,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HaETaskThread.cs" />
     <Compile Include="ResourceSystemReplacement\HaEResourceDistributerComponent.cs" />
     <Compile Include="HaeHamTweaks.cs" />
     <Compile Include="HaEPatchTweaksManager.cs" />
