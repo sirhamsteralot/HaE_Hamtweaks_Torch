@@ -61,6 +61,22 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             return false;
         }
 
+        public static bool PrefixResourceDistributorSetter(MyResourceDistributorComponent __instance)
+        {
+            // patch the setter for the resourcedistributor in mycubegridsystems so that we always have an up to date link
+            // create the customn resource distributor, replace it and link it with an entityId via checking if its the same reference or something?
+            // but shouldnt actually replace it because uhhhh then will run into race conditions?
+            // have it parallel to eachother and copy data over to eachother on a game update
+            // also need to check if its even neccesairy to copy over the data like that
+            // but its just replacing a reference so its probably fine and not even that slow?
+            // also needs to check probably if the entity already has a distributor and then just transfer it? create a new one? idfk
+
+
+
+            return true;
+        }
+
+
         #region helpers
         // Will return either the correct entity component, create one if it isnt there or return null if there is no entity
         private static HaEResourceDistributorComponent GetEntityComponent(MyResourceDistributorComponent instance)
