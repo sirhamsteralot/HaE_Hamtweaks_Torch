@@ -30,6 +30,9 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
     public class HaEResourceDistributorComponent : MyResourceDistributorComponent
     {
+        public bool CurrentlyWorking = false;
+        public object Copy { get; set; }
+
         public HaEResourceDistributorComponent(string debugName) : base(debugName)
         {
 
@@ -40,9 +43,10 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 
         }
 
-        public new void UpdateBeforeSimulation()
+        static MethodInfo recomputeMethod = typeof(MyResourceDistributorComponent).GetMethod("RecomputeResourceDistribution", BindingFlags.NonPublic | BindingFlags.Instance);
+        public void RecomputeResourceDistribution(MyDefinitionId typeId, bool updateChanges = true)
         {
-
+            recomputeMethod.Invoke(this, new object[] { typeId, updateChanges });
         }
     }
 }
