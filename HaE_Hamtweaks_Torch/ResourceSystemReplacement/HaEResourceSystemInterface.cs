@@ -12,11 +12,14 @@ using VRage.ModAPI;
 using VRage.Game;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using NLog;
 
 namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
     public static class HaEResourceSystemInterface
     {
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         private static Dictionary<long, HaEResourceDistributorComponent> _entityToDistributer = new Dictionary<long, HaEResourceDistributorComponent>();
         private const bool patchDisabled = false;
 
@@ -30,9 +33,11 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 
             if (!entityComponent.CurrentlyWorking)
             {
+                Log.Info("Copying component data...");
                 CopyComponentData(__instance.Entity, entityComponent);
             }
 
+            Log.Info("Enqueuing updatebeforesimulation");
             tasks.Enqueue(entityComponent.UpdateBeforeSimulation);
             return false;
         }
@@ -46,6 +51,7 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             var typeCopy = typeId;
             tasks.Enqueue(() => 
             {
+                Log.Info("Processing resource distribution In parralel thread");
                 entityComponent.RecomputeResourceDistribution(typeCopy, updateChanges);
                 entityComponent.CurrentlyWorking = true;
                 entityComponent.Copy = GetCopy(dataPerType.GetValue(entityComponent));
@@ -64,7 +70,11 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 
             IMyEntity instanceEntity = instance.Entity;
             if (instanceEntity == null)
+            {
                 return null;
+            }
+
+            Log.Info("Instance.Entity is not NULL!");
 
             HaEResourceDistributorComponent entityComponent;
             if (!_entityToDistributer.TryGetValue(instanceEntity.EntityId, out entityComponent))
@@ -87,17 +97,6 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             if (originalDistributorComp != null)
             {
                 dataPerType.SetValue(originalDistributorComp, replacementComp.Copy);
-
-                //object data = dataPerType.GetValue(originalDistributorComp);
-
-                //foreach (object obj in (data as IEnumerable<object>))
-                //{
-                //    Type objType = obj.GetType();
-                //    MyDefinitionId id = (MyDefinitionId)objType.GetField("TypeId").GetValue(originalDistributorComp);
-                //    objType.GetField("ResourceState").SetValue(originalDistributorComp, replacementComp.ResourceStateByType(id, false));
-                //    objType.GetField("MaxAvailableResource").SetValue(originalDistributorComp, replacementComp.MaxAvailableResourceByType(id));
-                //    objType.GetField("DistributionGroups").SetValue(originalDistributorComp, typeof(MyResourceSinkComponent).GetField("DistributionGroups").GetValue(replacementComp));
-                //}
             }
         }
 

@@ -27,27 +27,35 @@ using VRageRender;
 using Sandbox.Game.EntityComponents;
 using Torch.Utils.Reflected;
 using Torch.Managers.PatchManager;
+using NLog;
 
 namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 {
     [ReflectedLazy]
     public static class HaEResourceSystemPatcher
     {
+        private static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         public static void Patch(PatchContext ctx)
         {
             MethodInfo[] patchMethods = typeof(HaEResourceSystemInterface).GetMethods(BindingFlags.Static | BindingFlags.Public);
 
-            foreach (var method in typeof(MyCubeGridSystems).GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public))
+            int patchCount = 0;
+
+            foreach (var method in typeof(MyResourceDistributorComponent).GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 foreach (var patchMethod in patchMethods)
                 {
                     if (MethodComparer(method, patchMethod))
                     {
                         ctx.GetPattern(method).Prefixes.Add(patchMethod);
+                        patchCount++;
                         break;
                     }
                 }
             }
+
+            Log.Info($"Succesfully Patched {patchCount} out of {patchMethods.Length} Methods!");
         }
 
         private static bool MethodComparer(MethodInfo MethodA, MethodInfo MethodB)
