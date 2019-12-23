@@ -55,6 +55,11 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
                 }
             }
 
+            var resourceDistSetter = typeof(MyCubeGridSystems).GetProperty("ResourceDistributor", BindingFlags.Instance | BindingFlags.Public).GetSetMethod(true);
+            var resourceDistSetterReplacement = typeof(HaEResourceSystemInterface).GetMethod("PrefixResourceDistributorSetter", BindingFlags.Public | BindingFlags.Static);
+            ctx.GetPattern(resourceDistSetter).Prefixes.Add(resourceDistSetterReplacement);
+            patchCount++;
+
             Log.Info($"Succesfully Patched {patchCount} out of {patchMethods.Length} Methods!");
         }
 

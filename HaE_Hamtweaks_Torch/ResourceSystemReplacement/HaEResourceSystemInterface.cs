@@ -20,7 +20,7 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
     {
         private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        private static Dictionary<long, HaEResourceDistributorComponent> _entityToDistributer = new Dictionary<long, HaEResourceDistributorComponent>();
+        private static Dictionary<MyResourceDistributorComponent, HaEResourceDistributorComponent> _distributerToMyComp = new Dictionary<MyResourceDistributorComponent, HaEResourceDistributorComponent>();
         private const bool patchDisabled = false;
 
         private static HaETaskThread tasks = new HaETaskThread();
@@ -33,11 +33,9 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 
             if (!entityComponent.CurrentlyWorking)
             {
-                Log.Info("Copying component data...");
                 CopyComponentData(__instance.Entity, entityComponent);
             }
 
-            Log.Info("Enqueuing updatebeforesimulation");
             tasks.Enqueue(entityComponent.UpdateBeforeSimulation);
             return false;
         }
@@ -51,28 +49,27 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             var typeCopy = typeId;
             tasks.Enqueue(() => 
             {
-                Log.Info("Processing resource distribution In parralel thread");
-                entityComponent.RecomputeResourceDistribution(typeCopy, updateChanges);
+                entityComponent.RecomputeResourceDistribution(ref typeCopy, updateChanges);
                 entityComponent.CurrentlyWorking = true;
-                entityComponent.Copy = GetCopy(dataPerType.GetValue(entityComponent));
+                var copy = dataPerType.GetValue(entityComponent);
+                entityComponent.Copy = entityComponent.GetPerTypeDataCopy();
                 entityComponent.CurrentlyWorking = false;
             });
 
             return false;
         }
 
-        public static bool PrefixResourceDistributorSetter(MyResourceDistributorComponent __instance)
+        public static bool PrefixResourceDistributorSetter(MyCubeGridSystems __instance, MyResourceDistributorComponent value)
         {
             // patch the setter for the resourcedistributor in mycubegridsystems so that we always have an up to date link
-            // create the customn resource distributor, replace it and link it with an entityId via checking if its the same reference or something?
+            // create the custom resource distributor, replace it and link it with an entityId via checking if its the same reference or something?
             // but shouldnt actually replace it because uhhhh then will run into race conditions?
             // have it parallel to eachother and copy data over to eachother on a game update
-            // also need to check if its even neccesairy to copy over the data like that
+            // also need to check if its even neccesary to copy over the data like that
             // but its just replacing a reference so its probably fine and not even that slow?
             // also needs to check probably if the entity already has a distributor and then just transfer it? create a new one? idfk
 
-
-
+            GetEntityComponent(value);
             return true;
         }
 
@@ -84,52 +81,33 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             if (patchDisabled)
                 return null;
 
-            IMyEntity instanceEntity = instance.Entity;
-            if (instanceEntity == null)
+            if (instance == null)
             {
+                Log.Info("instance null!");
                 return null;
             }
 
-            Log.Info("Instance.Entity is not NULL!");
-
             HaEResourceDistributorComponent entityComponent;
-            if (!_entityToDistributer.TryGetValue(instanceEntity.EntityId, out entityComponent))
+            if (!_distributerToMyComp.TryGetValue(instance, out entityComponent))
             {
                 entityComponent = new HaEResourceDistributorComponent(instance);
 
-                _entityToDistributer.Add(instanceEntity.EntityId, entityComponent);
-                ReplaceOriginalComponent(instanceEntity, entityComponent);
+                _distributerToMyComp.Add(instance, entityComponent);
             }
 
             return entityComponent;
         }
 
         private static PropertyInfo resourceDistributor = typeof(MyCubeGridSystems).GetProperty("ResourceDistributor", BindingFlags.Public | BindingFlags.NonPublic);
-        private static PropertyInfo dataPerType = typeof(MyResourceSinkComponent).GetProperty("m_dataPerType");
+        private static FieldInfo dataPerType = typeof(MyResourceDistributorComponent).GetField("m_dataPerType", BindingFlags.NonPublic | BindingFlags.Instance);
         private static void CopyComponentData(IMyEntity entity, HaEResourceDistributorComponent replacementComp)
         {
-            MyResourceSinkComponent originalDistributorComp = (MyResourceSinkComponent)resourceDistributor?.GetValue(entity);
+            MyResourceDistributorComponent originalDistributorComp = (MyResourceDistributorComponent)resourceDistributor?.GetValue(entity);
 
             if (originalDistributorComp != null)
             {
                 dataPerType.SetValue(originalDistributorComp, replacementComp.Copy);
             }
-        }
-
-        private static object GetCopy(object input)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, input);
-                stream.Position = 0;
-                return formatter.Deserialize(stream);
-            }
-        }
-
-        private static void ReplaceOriginalComponent(IMyEntity entity, HaEResourceDistributorComponent newComponent)
-        {
-            resourceDistributor?.SetValue(entity, newComponent);
         }
         #endregion
     }

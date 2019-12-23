@@ -44,9 +44,25 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
         }
 
         static MethodInfo recomputeMethod = typeof(MyResourceDistributorComponent).GetMethod("RecomputeResourceDistribution", BindingFlags.NonPublic | BindingFlags.Instance);
-        public void RecomputeResourceDistribution(MyDefinitionId typeId, bool updateChanges = true)
+        public void RecomputeResourceDistribution(ref MyDefinitionId typeId, bool updateChanges = true)
         {
             recomputeMethod.Invoke(this, new object[] { typeId, updateChanges });
+        }
+
+        private static FieldInfo dataPerType = typeof(MyResourceDistributorComponent).GetField("m_dataPerType", BindingFlags.NonPublic | BindingFlags.Instance);
+        public object GetPerTypeDataCopy()
+        {
+            IEnumerable<object> dataPerTypeList = (IEnumerable<object>)dataPerType.GetValue(this);
+
+            List<object> dataPerTypeCopy = new List<object>();
+
+            foreach (var item in dataPerTypeList)
+            {
+                var itemCopy = item;
+                dataPerTypeCopy.Add(itemCopy);
+            }
+
+            return dataPerTypeCopy;
         }
     }
 }
