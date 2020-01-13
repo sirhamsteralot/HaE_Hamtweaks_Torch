@@ -31,6 +31,8 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             if (entityComponent == null)
                 return true;
 
+            // the side component also needs needed data fed to it so it can actually recompute and execute without missing data.
+
             if (!entityComponent.CurrentlyWorking)
             {
                 CopyComponentData(__instance.Entity, entityComponent);
@@ -61,20 +63,24 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
 
         public static bool PrefixResourceDistributorSetter(MyCubeGridSystems __instance, MyResourceDistributorComponent value)
         {
-            // patch the setter for the resourcedistributor in mycubegridsystems so that we always have an up to date link
-            // create the custom resource distributor, replace it and link it with an entityId via checking if its the same reference or something?
-            // but shouldnt actually replace it because uhhhh then will run into race conditions?
-            // have it parallel to eachother and copy data over to eachother on a game update
-            // also need to check if its even neccesary to copy over the data like that
-            // but its just replacing a reference so its probably fine and not even that slow?
-            // also needs to check probably if the entity already has a distributor and then just transfer it? create a new one? idfk
-
             GetEntityComponent(value);
             return true;
         }
 
 
         #region helpers
+        private static PropertyInfo resourceDistributor = typeof(MyCubeGridSystems).GetProperty("ResourceDistributor", BindingFlags.Public | BindingFlags.NonPublic);
+        private static FieldInfo dataPerType = typeof(MyResourceDistributorComponent).GetField("m_dataPerType", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo typeIdToIndex = typeof(MyResourceDistributorComponent).GetField("m_typeIdToIndex", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo forceRecalculation = typeof(MyResourceDistributorComponent).GetField("m_forceRecalculation", BindingFlags.NonPublic | BindingFlags.Instance);
+
+
+        private static void CopyCalculationData(MyResourceDistributorComponent instance, HaEResourceDistributorComponent haEInstance)
+        {
+            typeIdToIndex.SetValue(haEInstance, typeIdToIndex.GetValue(instance));
+            forceRecalculation.SetValue(haEInstance, forceRecalculation.GetValue(instance));
+        }
+
         // Will return either the correct entity component, create one if it isnt there or return null if there is no entity
         private static HaEResourceDistributorComponent GetEntityComponent(MyResourceDistributorComponent instance)
         {
@@ -98,8 +104,6 @@ namespace HaE_Hamtweaks_Torch.ResourceSystemReplacement
             return entityComponent;
         }
 
-        private static PropertyInfo resourceDistributor = typeof(MyCubeGridSystems).GetProperty("ResourceDistributor", BindingFlags.Public | BindingFlags.NonPublic);
-        private static FieldInfo dataPerType = typeof(MyResourceDistributorComponent).GetField("m_dataPerType", BindingFlags.NonPublic | BindingFlags.Instance);
         private static void CopyComponentData(IMyEntity entity, HaEResourceDistributorComponent replacementComp)
         {
             MyResourceDistributorComponent originalDistributorComp = (MyResourceDistributorComponent)resourceDistributor?.GetValue(entity);

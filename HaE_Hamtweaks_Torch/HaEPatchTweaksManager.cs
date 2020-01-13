@@ -28,7 +28,7 @@ namespace HaE_Hamtweaks_Torch
                 _patched = true;
                 _patchContext = _patchMgr.AcquireContext();
                 HaEPatching.Patch(_patchContext);
-                HaEResourceSystemPatcher.Patch(_patchContext);
+                //HaEResourceSystemPatcher.Patch(_patchContext);
             }
         }
 

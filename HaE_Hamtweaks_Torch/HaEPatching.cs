@@ -26,6 +26,11 @@ using Sandbox.Engine.Utils;
 using Sandbox.Game.Multiplayer;
 using NLog;
 using Sandbox.Game.EntityComponents;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using VRage.Scripting;
 
 namespace HaE_Hamtweaks_Torch
 {
@@ -100,10 +105,22 @@ namespace HaE_Hamtweaks_Torch
                 ctx.GetPattern(pattern).Prefixes
                     .Add(typeof(HaEPatching).GetMethod("PrefixJustNo", BindingFlags.Public | BindingFlags.Static));
 
+            pattern = typeof(MyIngameScripting).Assembly.GetType("VRage.Scripting.Rewriters.PerfCountingRewriter").GetMethod("Rewrite", BindingFlags.Public | BindingFlags.Static);
+            if (pattern == null)
+                Log.Warn("could not patch PerfCountingRewriter.Rewrite");
+            else
+                ctx.GetPattern(pattern).Prefixes
+                    .Add(typeof(HaEPatching).GetMethod("PrefixRewrite", BindingFlags.Public | BindingFlags.Static));
+
             Log.Info("Finished Patching!");
         }
         public static bool PrefixJustNo()
         {
+            return false;
+        }
+
+        public static bool PrefixRewrite(CSharpCompilation compilation, SyntaxTree syntaxTree, int modId, ref object __result) {
+            __result = syntaxTree;
             return false;
         }
 
