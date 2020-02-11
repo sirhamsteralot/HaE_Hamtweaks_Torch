@@ -31,6 +31,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using VRage.Scripting;
+using System.Runtime.CompilerServices;
 
 namespace HaE_Hamtweaks_Torch
 {
@@ -124,22 +125,33 @@ namespace HaE_Hamtweaks_Torch
             return false;
         }
 
-        private static Dictionary<MyGridShape, TimeSpan> lastUpdateTimestamp = new Dictionary<MyGridShape, TimeSpan>();
+        private static ConditionalWeakTable<MyGridShape, RefTimeSpan> lastUpdateTimestamp = new ConditionalWeakTable<MyGridShape, RefTimeSpan>();
         public static bool PrefixUpdateMassFromInventories(List<MyCubeBlock> blocks, MyPhysicsBody rb, MyGridShape __instance)
         {
-            TimeSpan time;
+            RefTimeSpan time;
             if (!lastUpdateTimestamp.TryGetValue(__instance, out time))
             {
-                lastUpdateTimestamp[__instance] = MySession.Static.ElapsedGameTime;
+                lastUpdateTimestamp.Add(__instance, new RefTimeSpan(MySession.Static.ElapsedGameTime));
                 return true;
             }
 
-            if ((MySession.Static.ElapsedGameTime - time).TotalMilliseconds < 1000)
+            if ((MySession.Static.ElapsedGameTime - time.timespan).TotalMilliseconds < 1000)
                 return false;
 
-            lastUpdateTimestamp[__instance] = MySession.Static.ElapsedGameTime;
+            lastUpdateTimestamp.Remove(__instance);
+            lastUpdateTimestamp.Add(__instance, new RefTimeSpan(MySession.Static.ElapsedGameTime));
 
             return true;
+        }
+
+        private class RefTimeSpan
+        {
+            public TimeSpan timespan;
+
+            public RefTimeSpan(TimeSpan timespan)
+            {
+                this.timespan = timespan;
+            }
         }
 
         public static void SuffixLCDInitialized(MyTextPanel __instance)
