@@ -1,5 +1,4 @@
-﻿using HaE_Hamtweaks_Torch.ResourceSystemReplacement;
-using Torch.API;
+﻿using Torch.API;
 using Torch.Managers;
 using Torch.Managers.PatchManager;
 
@@ -28,7 +27,6 @@ namespace HaE_Hamtweaks_Torch
                 _patched = true;
                 _patchContext = _patchMgr.AcquireContext();
                 HaEPatching.Patch(_patchContext);
-                HaEResourceSystemPatcher.Patch(_patchContext);
             }
         }
 
